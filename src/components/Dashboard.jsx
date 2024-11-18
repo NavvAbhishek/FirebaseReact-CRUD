@@ -1,7 +1,7 @@
 import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -25,20 +25,22 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const getMovieList = async () => {
-      try {
-        const data = await getDocs(moviesCollectionRef);
-        const filteredData = data.docs.map((doc) => ({
+    try {
+      // Setting up real-time listener using onSnapshot
+      const unsubscribe = onSnapshot(moviesCollectionRef, (snapshot) => {
+        const movieData = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
         }));
-        console.log(filteredData);
-        setMovieList(filteredData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getMovieList();
+        setMovieList(movieData);
+        console.log("Real-time data fetched:", movieData);
+      });
+
+      // Cleanup the listener when the component unmounts
+      return () => unsubscribe();
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   const onSubmitMovie = async () => {
