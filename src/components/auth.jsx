@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { auth, googleProvider } from "../config/firebase";
+import { auth, googleProvider, facebookProvider } from "../config/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import googleLogo from "../assets/google.png";
+import fbLogo from "../assets/fb.png";
 import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
@@ -26,6 +27,17 @@ const Auth = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    try {
+      await signInWithPopup(auth, facebookProvider );
+      console.log("successfully login with facebook")
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      console.log("error when login with facebook")
     }
   };
 
@@ -102,9 +114,12 @@ const Auth = () => {
                 Sign in
               </button>
             </div>
-            <div className="flex justify-center mt-5">
+            <div className="flex justify-center mt-5 gap-5">
               <button onClick={signInWithGoogle}>
                 <img src={googleLogo} alt="Logo" className="h-10 w-10" />
+              </button>
+              <button onClick={signInWithFacebook}>
+                <img src={fbLogo} alt="Logo" className="h-11 w-11" />
               </button>
             </div>
           </form>
