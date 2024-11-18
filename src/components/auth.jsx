@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { auth } from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, googleProvider } from "../config/firebase";
+import { createUserWithEmailAndPassword,signInWithPopup } from "firebase/auth";
+import googleLogo from "../assets/google.png";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,13 @@ const Auth = () => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider)
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="grid  items-center gap-4 max-w-md md:max-w-lg  w-full p-4 m-4 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md">
@@ -86,6 +94,13 @@ const Auth = () => {
               >
                 Sign in
               </button>
+            </div>
+            <div className="flex justify-center mt-5">
+            <button onClick={signInWithGoogle}>
+              <img src={googleLogo} alt="Logo"
+              className="h-10 w-10"
+              />
+            </button>
             </div>
           </form>
         </div>
