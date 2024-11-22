@@ -7,6 +7,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -15,6 +16,8 @@ const Dashboard = () => {
   const [movieTitle, setMovieTitle] = useState("");
   const [releaseYear, setReleaseYear] = useState(0);
   const [isHaveOscar, setIsHaveOscar] = useState(false);
+
+  const [updatedTitle, setUpdatedTitle] = useState("");
 
   const moviesCollectionRef = collection(db, "movies");
 
@@ -66,6 +69,16 @@ const Dashboard = () => {
   const deleteMovie = async (id) => {
     const movieDoc = doc(db, "movies", id);
     await deleteDoc(movieDoc);
+  };
+
+  const updateMovie = async (id) => {
+    try {
+      const movieDoc = doc(db, "movies", id);
+      await updateDoc(movieDoc, { title: updatedTitle });
+      setUpdatedTitle("")
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -134,12 +147,29 @@ const Dashboard = () => {
                   {data.oscar ? "Yes" : "No"}
                 </span>
               </div>
-              <button
-                onClick={() => deleteMovie(data.id)}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                Delete
-              </button>
+              <div>
+                <input
+                  type="text"
+                  onChange={(e) => setUpdatedTitle(e.target.value)}
+                  value={updatedTitle}
+                  placeholder="update title"
+                  className="w-[80%] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div className="flex flex-row mt-2 gap-2">
+                  <button
+                    onClick={() => updateMovie(data.id)}
+                    className=" bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => deleteMovie(data.id)}
+                    className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}
