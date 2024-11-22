@@ -1,7 +1,13 @@
 import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -57,6 +63,11 @@ const Dashboard = () => {
     }
   };
 
+  const deleteMovie = async (id) => {
+    const movieDoc = doc(db, "movies", id);
+    await deleteDoc(movieDoc);
+  };
+
   return (
     <div className="m-20 flex flex-col items-center space-y-6">
       {/* Form Container */}
@@ -103,23 +114,36 @@ const Dashboard = () => {
       >
         Logout
       </button>
-      {movieList.map((data) => {
-        return (
-          <div key={data.id}>
-            <div>
-              Name: <span className="font-semibold">{data.title}</span>
+      <div className="flex gap-5">
+        {movieList.map((data) => {
+          return (
+            <div
+              key={data.id}
+              className="min-w-[10rem] flex flex-col items-start gap-2"
+            >
+              <div>
+                Name: <span className="font-semibold">{data.title}</span>
+              </div>
+              <div>
+                {" "}
+                Year: <span className="font-semibold">{data.year}</span>
+              </div>
+              <div>
+                Oscar?{" "}
+                <span className="font-semibold">
+                  {data.oscar ? "Yes" : "No"}
+                </span>
+              </div>
+              <button
+                onClick={() => deleteMovie(data.id)}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Delete
+              </button>
             </div>
-            <div>
-              {" "}
-              Year: <span className="font-semibold">{data.year}</span>
-            </div>
-            <div>
-              Oscar?{" "}
-              <span className="font-semibold">{data.oscar ? "Yes" : "No"}</span>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
