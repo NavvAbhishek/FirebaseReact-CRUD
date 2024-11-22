@@ -10,14 +10,13 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import MovieCard from "./MovieCard";
 
 const Dashboard = () => {
   const [movieList, setMovieList] = useState([]);
   const [movieTitle, setMovieTitle] = useState("");
   const [releaseYear, setReleaseYear] = useState(0);
   const [isHaveOscar, setIsHaveOscar] = useState(false);
-
-  const [updatedTitle, setUpdatedTitle] = useState("");
 
   const moviesCollectionRef = collection(db, "movies");
 
@@ -28,7 +27,7 @@ const Dashboard = () => {
       console.log("Sign-out successful");
       navigate("/");
     } catch (error) {
-      console.error(error.messa);
+      console.error(error.message);
       console.log("An error happened");
     }
   };
@@ -71,11 +70,10 @@ const Dashboard = () => {
     await deleteDoc(movieDoc);
   };
 
-  const updateMovie = async (id) => {
+  const updateMovie = async (id, updatedTitle) => {
     try {
       const movieDoc = doc(db, "movies", id);
       await updateDoc(movieDoc, { title: updatedTitle });
-      setUpdatedTitle("")
     } catch (error) {
       console.log(error);
     }
@@ -128,51 +126,17 @@ const Dashboard = () => {
         Logout
       </button>
       <div className="flex gap-5">
-        {movieList.map((data) => {
-          return (
-            <div
-              key={data.id}
-              className="min-w-[10rem] flex flex-col items-start gap-2"
-            >
-              <div>
-                Name: <span className="font-semibold">{data.title}</span>
-              </div>
-              <div>
-                {" "}
-                Year: <span className="font-semibold">{data.year}</span>
-              </div>
-              <div>
-                Oscar?{" "}
-                <span className="font-semibold">
-                  {data.oscar ? "Yes" : "No"}
-                </span>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  onChange={(e) => setUpdatedTitle(e.target.value)}
-                  value={updatedTitle}
-                  placeholder="update title"
-                  className="w-[80%] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <div className="flex flex-row mt-2 gap-2">
-                  <button
-                    onClick={() => updateMovie(data.id)}
-                    className=" bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => deleteMovie(data.id)}
-                    className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white font-medium rounded-md shadow focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {movieList.map((data) => (
+          <MovieCard
+            key={data.id}
+            id={data.id}
+            title={data.title}
+            year={data.year}
+            oscar={data.oscar}
+            updateMovie={updateMovie}
+            deleteMovie={deleteMovie}
+          />
+        ))}
       </div>
     </div>
   );
