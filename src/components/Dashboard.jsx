@@ -57,6 +57,7 @@ const Dashboard = () => {
         title: movieTitle,
         year: releaseYear,
         oscar: isHaveOscar,
+        userId: auth?.currentUser?.uid
       });
       console.log("movies data added successfully");
     } catch (error) {
